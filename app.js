@@ -9,8 +9,7 @@ const { limiter } = require('./utils/constants');
 const routes = require('./routes/index');
 const errorHandler = require('./middlewares/error-handler');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
-
-const { PORT, BASE_PATH } = process.env;
+const { PORT, BASE_PATH } = require('./config');
 
 const app = express();
 

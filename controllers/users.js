@@ -8,9 +8,7 @@ const User = require('../models/user');
 const { NODE_ENV, JWT_SECRET } = process.env;
 
 module.exports.createUser = (req, res, next) => {
-  const {
-    email, password, name,
-  } = req.body;
+  const { email, password, name } = req.body;
 
   bcrypt
     .hash(password, 10)
@@ -50,19 +48,23 @@ module.exports.editUserData = (req, res, next) => {
     },
   )
     .then((user) => {
-      if (user) {
-        res.send(user);
-      } else {
+      res.send(user);
+    })
+    .catch((err) => {
+      if (err.code === 11000) {
+        next(
+          new ConflictError(
+            `Пользователь с таким email ${email} уже зарегистрирован`,
+          ),
+        );
+      } else if (err.name === 'ValidationError') {
+        next(new BadRequestError(err.message));
+      } else if (err.name === 'DocumentNotFoundError') {
         next(
           new NotFoundError(
             `Пользователь по указанному _id: ${req.params.userId} не найден`,
           ),
         );
-      }
-    })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new BadRequestError(err.message));
       } else {
         next(err);
       }
@@ -74,9 +76,13 @@ module.exports.login = (req, res, next) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'some-secret-key', {
-        expiresIn: '7d',
-      });
+      const token = jwt.sign(
+        { _id: user._id },
+        NODE_ENV === 'production' ? JWT_SECRET : 'some-secret-key',
+        {
+          expiresIn: '7d',
+        },
+      );
       res.send({ token });
     })
     .catch((err) => {
