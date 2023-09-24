@@ -8,4 +8,4 @@
 * MongoDB
 ## [Адрес репозитория](https://github.com/Methoni/movies-explorer-api)
 ## Проект на [ВМ](https://api.movies.methoni.nomoredomainsrocks.ru)
-IP 158.160.3.106
+IP 158.160.79.253
