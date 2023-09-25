@@ -11,7 +11,7 @@ const {
 router.get('/', getMovies);
 
 router.delete(
-  '/_id',
+  '/:_id',
   celebrate({
     params: Joi.object().keys({
       _id: Joi.string().length(24).hex().required(),
